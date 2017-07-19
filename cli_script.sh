@@ -174,6 +174,7 @@ if $DCOS_OSS; then
     log_msg "Starting DC/OS OSS Demo"
     log_msg "Override default credentials with DCOS_AUTH_TOKEN"
     oss_login
+    demo_eval "dcos marathon app add marathon-lb-oss.json"
 else
     log_msg "Starting DC/OS Enterprise Demo"
     log_msg "Override default credentials with --user and --pw"
@@ -195,6 +196,8 @@ else
     demo_eval "curl -skSL -X PUT -H \"$auth_h\" $DCOS_URL/acs/api/v1/acls/dcos:service:marathon:marathon:admin:events/users/dcos_marathon_lb/read"
     demo_eval "curl -skSL -X PUT -H \"$auth_h\" $DCOS_URL/acs/api/v1/acls/dcos:service:marathon:marathon:services:%252F/users/dcos_marathon_lb/read"
 
+    demo_eval "dcos marathon app add marathon-lb.json"
+
     cat <<EOF > options.json
 {
   "marathon-lb": {
@@ -205,9 +208,11 @@ EOF
 fi
 
 if $INFRA_ONLY; then
-    install_packages=(marathon-lb cassandra kafka)
+    # install_packages=(marathon-lb cassandra kafka)
+    install_packages=(cassandra kafka)
 else
-    install_packages=(marathon-lb cassandra kafka zeppelin)
+    # install_packages=(marathon-lb cassandra kafka zeppelin)
+    install_packages=(cassandra kafka zeppelin)
 fi
 
 for pkg in ${install_packages[*]}; do
